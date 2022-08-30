@@ -339,7 +339,9 @@ where
 
     fn start_send(mut self: Pin<&mut Self>, msg: Message<S>) -> Result<(), Self::Error> {
         let msg = match msg {
-            Message::Item(buf) => ws::Message::Binary(C::encode(buf).map_err(Error::Codec)?),
+            Message::Item(buf) => {
+                ws::Message::Text(String::from_utf8(C::encode(buf).map_err(Error::Codec)?).unwrap())
+            }
             Message::Ping(buf) => ws::Message::Ping(buf),
             Message::Pong(buf) => ws::Message::Pong(buf),
             Message::Close(frame) => ws::Message::Close(frame),
